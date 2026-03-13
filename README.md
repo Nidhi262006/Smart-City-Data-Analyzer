@@ -16,7 +16,11 @@ This project is an AI-powered Smart City Data Analyzer built using Python and St
 - Streamlit
 
 ## How to Run
+
 Install dependencies:
+
 pip install -r requirements.txt
+
 Run the application:
+
 streamlit run app.py
