@@ -48,6 +48,42 @@ if uploaded_file is not None:
     st.write("Area with highest pollution:", max_pollution["Area"])
     st.write("Area with highest energy consumption:", max_energy["Area"])
 
+    st.subheader("AI-Generated Recommendations")
+    st.info(
+        "These are data-driven recommendations based on the uploaded dataset."
+        "They are possible actions and not guaranteed solutions."
+    )
+
+    st.markdown("### Traffic Recommendation")
+    st.write(
+        f"**{max_traffic['Area']}** has the highest traffic level "
+        f"({max_traffic['Traffic']})."
+    )
+    st.write(
+        "Possible actions include optimizing traffic signals, improving public " 
+        "transportation, and implementing congestion-management measures."
+    )
+
+    st.markdown("### Pollution Recommendation")
+    st.write(
+        f"**{max_pollution['Area']}** has the highest pollution level "
+        f"({max_pollution['Pollution']})."
+    )
+    st.write(
+        "Possible actions include stronger emission monitoring, pollution-control "
+        "measures, and promoting cleaner transportation."
+    )
+
+    st.markdown("### Energy Recommendation")
+    st.write(
+        f"**{max_energy['Area']}** has the highest energy consumption "
+        f"({max_energy['Energy']})."
+    )
+    st.write(
+        "Possible actions include improving energy efficiency, using smart energy "
+        "management, and reducing unnecessary energy consumption."
+    )
+
     st.subheader("Correlation Analysis")
 
     correlation = data.corr(numeric_only=True)
