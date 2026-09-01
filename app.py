@@ -1,57 +1,97 @@
+"""
+Smart City Data Analyzer - Main Application
+
+A modern Streamlit dashboard for analyzing urban city data including
+traffic patterns, pollution levels, and energy consumption.
+"""
+
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
+from config import PAGE_CONFIG
+from styles import get_custom_css
+from components import (
+    render_header,
+    render_upload_section,
+    render_section_heading,
+    render_metrics_row,
+    render_insights_row,
+)
+from analytics import (
+    load_data,
+    calculate_metrics,
+    get_key_insights,
+    get_correlation_matrix,
+    get_statistics,
+)
+from charts import (
+    create_traffic_chart,
+    create_pollution_chart,
+    create_energy_chart,
+    create_correlation_heatmap,
+)
 
-st.title("Smart City Data Analyzer")
+# ===== PAGE CONFIGURATION =====
+st.set_page_config(**PAGE_CONFIG)
 
-# Upload dataset
-uploaded_file = st.file_uploader("Upload City Dataset", type=["csv"])
+# ===== APPLY CUSTOM STYLING =====
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
+# ===== RENDER HEADER =====
+render_header()
+
+# ===== UPLOAD SECTION =====
+uploaded_file = render_upload_section()
+
+# ===== MAIN CONTENT (only if CSV is uploaded) =====
 if uploaded_file is not None:
-    
-    data = pd.read_csv(uploaded_file)
-    
-    st.write("Dataset Preview")
-    st.write(data.head())
 
-    st.write("Basic Statistics")
-    st.write(data.describe())
+    # Load and process data
+    data = load_data(uploaded_file)
+    metrics = calculate_metrics(data)
+    insights = get_key_insights(data)
+    correlation = get_correlation_matrix(data)
+    statistics = get_statistics(data)
 
-    # Traffic chart
-    st.subheader("Traffic Analysis")
-    plt.figure()
-    plt.bar(data["Area"], data["Traffic"])
-    plt.title("Traffic by Area")
-    st.pyplot(plt)
+    # ===== DATASET OVERVIEW SECTION =====
+    render_section_heading("overview")
+    render_metrics_row(metrics)
 
-    # Pollution chart
-    st.subheader("Pollution Levels")
-    plt.figure()
-    plt.bar(data["Area"], data["Pollution"])
-    plt.title("Pollution by Area")
-    st.pyplot(plt)
+    # ===== DATASET PREVIEW SECTION =====
+    render_section_heading("preview")
+    with st.container():
+        st.dataframe(data, use_container_width=True, hide_index=True)
 
-    # Energy chart
-    st.subheader("Energy Consumption")
-    plt.figure()
-    plt.plot(data["Area"], data["Energy"])
-    plt.title("Energy Usage")
-    st.pyplot(plt)
+    # ===== URBAN ANALYTICS SECTION =====
+    render_section_heading("analytics")
 
-    st.subheader("Key Insights")
+    col1, col2 = st.columns(2)
 
-    max_traffic = data.loc[data["Traffic"].idxmax()]
-    max_pollution = data.loc[data["Pollution"].idxmax()]
-    max_energy = data.loc[data["Energy"].idxmax()]
+    with col1:
+        st.markdown("### Traffic by Area")
+        st.pyplot(create_traffic_chart(data), use_container_width=True)
 
-    st.write("Area with highest traffic:", max_traffic["Area"])
-    st.write("Area with highest pollution:", max_pollution["Area"])
-    st.write("Area with highest energy consumption:", max_energy["Area"])
+    with col2:
+        st.markdown("### Pollution by Area")
+        st.pyplot(create_pollution_chart(data), use_container_width=True)
 
-    st.subheader("Correlation Analysis")
+    # Energy chart (full width)
+    st.markdown("### Energy Consumption by Area")
+    st.pyplot(create_energy_chart(data), use_container_width=True)
 
-    correlation = data.corr(numeric_only=True)
-    st.write(correlation)
+    # ===== KEY INSIGHTS SECTION =====
+    render_section_heading("insights")
+    render_insights_row(insights)
 
-    st.subheader("Dataset Visualization")
-    st.dataframe(data)
+    # ===== CORRELATION ANALYSIS SECTION =====
+    render_section_heading("correlation")
+    st.pyplot(create_correlation_heatmap(correlation), use_container_width=True)
+    st.markdown("#### Correlation Matrix")
+    st.dataframe(correlation, use_container_width=True)
+
+    # ===== DATASET STATISTICS SECTION =====
+    render_section_heading("statistics")
+    st.dataframe(statistics, use_container_width=True)
+
+    # ===== FULL DATASET SECTION =====
+    render_section_heading("visualization")
+    st.markdown("#### Full Dataset")
+    st.dataframe(data, use_container_width=True, hide_index=True)
