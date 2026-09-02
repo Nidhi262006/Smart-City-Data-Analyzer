@@ -59,6 +59,12 @@ if uploaded_file is not None:
     render_section_heading("preview")
     with st.container():
         st.dataframe(data, use_container_width=True, hide_index=True)
+        st.download_button(
+            label="Download CSV",
+            data=data.to_csv(index=False),
+            file_name="analyzed_dataset.csv",
+            mime="text/csv",
+        )
 
     # ===== URBAN ANALYTICS SECTION =====
     render_section_heading("analytics")
