@@ -69,6 +69,20 @@ if uploaded_file is not None:
     # ===== URBAN ANALYTICS SECTION =====
     render_section_heading("analytics")
 
+    selected_metric = st.selectbox(
+        "Select a metric to visualize",
+        options=["Traffic", "Pollution", "Energy Consumption"],
+    )
+
+    selected_chart = {
+        "Traffic": ("Traffic by Area", create_traffic_chart),
+        "Pollution": ("Pollution by Area", create_pollution_chart),
+        "Energy Consumption": ("Energy Consumption by Area", create_energy_chart),
+    }
+    chart_title, chart_builder = selected_chart[selected_metric]
+    st.markdown(f"### {chart_title}")
+    st.pyplot(chart_builder(data), use_container_width=True)
+
     col1, col2 = st.columns(2)
 
     with col1:
